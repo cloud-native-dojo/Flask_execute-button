@@ -13,9 +13,9 @@
             font-family: Arial, sans-serif;
         }
         button {
-            padding: 20px;
-            font-size: 20px;
-            margin-bottom: 20px;
+            padding: 40px; /* Increased padding */
+            font-size: 28px; /* Increased font size */
+            margin-bottom: 40px;
         }
         pre {
             padding: 10px;
@@ -27,9 +27,9 @@
     </style>
 </head>
 <body>
-    <button onclick="sendMessage()">Click me</button>
     <h1>Pod Status</h1>
     <pre id="pod-output">Loading...</pre>
+    <button onclick="sendMessage()">REBOOT</button>
     <script>
         function sendMessage() {
             fetch('/button-click', {
