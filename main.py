@@ -82,9 +82,9 @@ HTML = """
                         podContainer.className = 'pod-container';
                         const img = document.createElement('img');
                         if (status === 'Running') {
-                            img.src = "{{ url_for('static', filename='images/computer_green.png') }}";
+                            img.src = "images/computer_green.png";
                         } else {
-                            img.src = "{{ url_for('static', filename='images/computer_gray.png') }}";
+                            img.src = "images/computer_gray.png";
                         }
                         img.className = 'pod-image';
                         const podName = document.createElement('div');
