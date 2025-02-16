@@ -44,16 +44,16 @@ HTML = """
             margin-bottom: 40px; /* Added margin-bottom */
         }
         button {
-            padding: 50px; /* Increased padding */
-            font-size: 32px; /* Increased font size */
-            margin-top: 40px; /* Added margin-top */
+            padding: 10px; /* Adjusted padding */
+            font-size: 16px; /* Adjusted font size */
+            margin-top: 10px; /* Adjusted margin-top */
         }
     </style>
 </head>
 <body>
     <h1>Pod Status</h1>
     <div id="pod-images" class="pod-wrapper">Loading...</div>
-    <button onclick="sendMessage()">REBOOT</button>
+    <button onclick="sendMessage()">REBOOT ALL</button>
     <script>
         function sendMessage() {
             fetch('/button-click', {
@@ -62,6 +62,16 @@ HTML = """
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({message: 'ボタンクリック'})
+            });
+        }
+
+        function deletePod(podName) {
+            fetch('/delete-pod', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({pod_name: podName})
             });
         }
 
@@ -90,8 +100,12 @@ HTML = """
                         const podName = document.createElement('div');
                         podName.className = 'pod-name';
                         podName.textContent = name;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deletePod(name);
                         podContainer.appendChild(img);
                         podContainer.appendChild(podName);
+                        podContainer.appendChild(deleteButton);
                         podImagesDiv.appendChild(podContainer);
                     }
                 });
@@ -100,7 +114,7 @@ HTML = """
             }
         }
 
-        setInterval(fetchPodData, 1000);
+        setInterval(fetchPodData, 500);
         fetchPodData();
     </script>
 </body>
@@ -130,6 +144,15 @@ def button_click():
     message = data.get('message', '')
     subprocess.run(['kubectl', 'delete', 'pod', '--all', '--force'], encoding='utf-8', stdout=subprocess.PIPE)
     return jsonify({'reply': f'Server received: {message}'})
+
+@app.route('/delete-pod', methods=['POST'])
+def delete_pod():
+    data = request.json
+    pod_name = data.get('pod_name', '')
+    if pod_name:
+        subprocess.run(['kubectl', 'delete', 'pod', pod_name, '--force'], encoding='utf-8', stdout=subprocess.PIPE)
+        return jsonify({'reply': f'Deleted pod: {pod_name}'})
+    return jsonify({'reply': 'Pod name not provided'}), 400
 
 @app.route('/pods')
 def get_pods():
