@@ -26,27 +26,27 @@ HTML = """
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 20px; /* Increased margin */
+            margin: 20px;
         }
         .pod-image {
-            width: 150px; /* Increased width */
-            height: 150px; /* Increased height */
-            margin: 10px; /* Increased margin */
+            width: 150px;
+            height: 150px;
+            margin: 10px;
         }
         .pod-name {
-            margin-top: 10px; /* Increased margin */
-            font-size: 18px; /* Increased font size */
+            margin-top: 10px;
+            font-size: 18px;
         }
         .pod-wrapper {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            margin-bottom: 40px; /* Added margin-bottom */
+            margin-bottom: 40px;
         }
         button {
-            padding: 10px; /* Adjusted padding */
-            font-size: 16px; /* Adjusted font size */
-            margin-top: 10px; /* Adjusted margin-top */
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -82,20 +82,14 @@ HTML = """
                 const podOutput = data.output;
                 const podImagesDiv = document.getElementById('pod-images');
                 podImagesDiv.innerHTML = '';
-                const podLines = podOutput.split('\\n').slice(1); // Skip the header line
+                const podLines = podOutput.split('\\n').slice(1);
                 podLines.forEach(line => {
                     if (line.trim()) {
-                        const columns = line.split(/\s+/);
-                        const name = columns[0]; // Assuming name is in the first column
-                        const status = columns[2]; // Assuming status is in the third column
+                        const [name, , status] = line.split(/\s+/);
                         const podContainer = document.createElement('div');
                         podContainer.className = 'pod-container';
                         const img = document.createElement('img');
-                        if (status === 'Running') {
-                            img.src = "images/computer_green.png";
-                        } else {
-                            img.src = "images/computer_gray.png";
-                        }
+                        img.src = status === 'Running' ? "images/computer_green.png" : "images/computer_gray.png";
                         img.className = 'pod-image';
                         const podName = document.createElement('div');
                         podName.className = 'pod-name';
@@ -135,7 +129,6 @@ def fetch_pod_data():
 
 @app.route('/')
 def index():
-    # return render_template('index.html')
     return HTML
 
 @app.route('/button-click', methods=['POST'])
