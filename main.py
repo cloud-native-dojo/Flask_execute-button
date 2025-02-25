@@ -1,9 +1,20 @@
+#実行コマンドメモ
+#python3 main.py name-list 5003
+#python3 main.py name-list-old 5004
+
 import flask
 from flask import request, jsonify, render_template
 import subprocess
 import threading
 import time
 import sys
+import logging
+
+# ロガーの取得
+werkzeug_logger = logging.getLogger("werkzeug")
+# レベルの変更
+werkzeug_logger.setLevel(logging.ERROR)
+
 
 args = sys.argv
 
@@ -46,4 +57,4 @@ def get_pods():
 if __name__ == '__main__':
     thread = threading.Thread(target=fetch_pod_data, daemon=True)
     thread.start()
-    app.run(port=5003)
+    app.run(port=args[2])
