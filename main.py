@@ -17,28 +17,27 @@ HTML = """
         body {
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Align items to the top */
+            justify-content: flex-start;
             align-items: center;
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #a9a9a9; /* Lighter gray background */
+            background-color: #a9a9a9;
         }
         ul {
             list-style-type: none;
             padding: 0;
+            width: 90%;
+            max-width: 1200px;
         }
         li {
             padding: 10px;
             border: 1px solid #ccc;
-            width: 90%;
-            max-width: 1200px;
             overflow-x: auto;
-            font-size: 24px; /* Larger font size */
-            text-align: left; /* Left-align text */
+            font-size: 24px;
+            text-align: left;
             background-color: #fff;
-            margin-bottom: 5px;
-            margin-top: 5px; /* Add margin-top to move the items down */
+            margin: 5px 0;
         }
         h1 {
             font-size: 36px;
@@ -47,15 +46,15 @@ HTML = """
         .button-container {
             display: flex;
             justify-content: center;
-            gap: 20px; /* Add gap between buttons */
+            gap: 20px;
             width: 100%;
-            padding: 80px; /* Increase padding to move buttons further down */
+            padding: 20px;
             position: fixed;
-            bottom: 20px; /* Fix the position at the bottom */
+            bottom: 20px;
         }
         .button {
-            padding: 30px 60px; /* Increase button size */
-            font-size: 24px;
+            padding: 30px 60px;
+            font-size: 32px;
             border: none;
             cursor: pointer;
         }
@@ -86,11 +85,9 @@ HTML = """
                 const newPods = data.output.split('\\n');
                 const podListElement = document.getElementById('pod-list');
 
-                // Find pods to add and remove
                 const podsToAdd = newPods.filter(pod => !currentPods.includes(pod));
                 const podsToRemove = currentPods.filter(pod => !newPods.includes(pod));
 
-                // Remove old pods
                 podsToRemove.forEach(pod => {
                     const listItem = document.getElementById(pod);
                     if (listItem) {
@@ -98,7 +95,6 @@ HTML = """
                     }
                 });
 
-                // Add new pods
                 podsToAdd.forEach(pod => {
                     const listItem = document.createElement('li');
                     listItem.id = pod;
@@ -115,7 +111,6 @@ HTML = """
                     podListElement.appendChild(listItem);
                 });
 
-                // Update currentPods
                 currentPods = newPods;
             } catch (error) {
                 document.getElementById('pod-list').textContent = 'Error fetching data';
