@@ -17,7 +17,7 @@ HTML = """
         body {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start; /* Align items to the top */
             align-items: center;
             height: 100vh;
             margin: 0;
@@ -38,10 +38,16 @@ HTML = """
             text-align: left; /* Left-align text */
             background-color: #fff;
             margin-bottom: 5px;
+            margin-top: 5px; /* Add margin-top to move the items down */
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
+    <h1>コンテナ管理</h1>
     <ul id="pod-list">Loading...</ul>
     <script>
         let currentPods = [];
