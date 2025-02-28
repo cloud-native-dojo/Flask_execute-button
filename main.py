@@ -22,43 +22,51 @@ HTML = """
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
+            background-color: #a9a9a9; /* Lighter gray background */
         }
-        button {
-            padding: 20px;
-            font-size: 20px;
-            margin-bottom: 20px;
+        ul {
+            list-style-type: none;
+            padding: 0;
         }
-        pre {
+        li {
             padding: 10px;
             border: 1px solid #ccc;
-            width: 80%;
-            max-width: 600px;
+            width: 90%;
+            max-width: 1200px;
             overflow-x: auto;
+            font-size: 24px; /* Larger font size */
+            text-align: left; /* Left-align text */
+            background-color: #fff;
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
-    <button onclick="sendMessage()">Click me</button>
-    <h1>Pod Status</h1>
-    <pre id="pod-output">Loading...</pre>
+    <ul id="pod-list">Loading...</ul>
     <script>
-        function sendMessage() {
-            fetch('/button-click', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({message: 'ボタンクリック'})
-            });
-        }
-
         async function fetchPodData() {
             try {
                 const response = await fetch('/pods');
                 const data = await response.json();
-                document.getElementById('pod-output').textContent = data.output;
+                const podList = data.output.split('\\n');
+                const podListElement = document.getElementById('pod-list');
+                podListElement.innerHTML = '';
+                podList.forEach(pod => {
+                    const listItem = document.createElement('li');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = pod;
+                    checkbox.name = pod;
+                    checkbox.value = pod;
+                    const label = document.createElement('label');
+                    label.htmlFor = pod;
+                    label.appendChild(document.createTextNode(pod));
+                    listItem.appendChild(checkbox);
+                    listItem.appendChild(label);
+                    podListElement.appendChild(listItem);
+                });
             } catch (error) {
-                document.getElementById('pod-output').textContent = 'Error fetching data';
+                document.getElementById('pod-list').textContent = 'Error fetching data';
             }
         }
 
@@ -74,8 +82,8 @@ def fetch_pod_data():
     global pod_data
     while True:
         try:
-            result = subprocess.check_output(["kubectl", "get", "pod"], text=True)
-            pod_data["output"] = result
+            result = subprocess.check_output(["kubectl", "get", "pod", "-o", "custom-columns=:metadata.name"], text=True)
+            pod_data["output"] = result.strip()
         except subprocess.CalledProcessError as e:
             pod_data["output"] = f"Error fetching pods: {e}"
         time.sleep(0.5)
