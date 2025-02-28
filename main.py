@@ -44,11 +44,38 @@ HTML = """
             font-size: 36px;
             margin-bottom: 20px;
         }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Add gap between buttons */
+            width: 100%;
+            padding: 80px; /* Increase padding to move buttons further down */
+            position: fixed;
+            bottom: 20px; /* Fix the position at the bottom */
+        }
+        .button {
+            padding: 30px 60px; /* Increase button size */
+            font-size: 24px;
+            border: none;
+            cursor: pointer;
+        }
+        .create-button {
+            background-color: red;
+            color: white;
+        }
+        .delete-button {
+            background-color: blue;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <h1>コンテナ管理</h1>
     <ul id="pod-list">Loading...</ul>
+    <div class="button-container">
+        <button class="button create-button" onclick="createPod()">作成</button>
+        <button class="button delete-button" onclick="deletePod()">削除</button>
+    </div>
     <script>
         let currentPods = [];
 
@@ -95,6 +122,30 @@ HTML = """
             }
         }
 
+        async function createPod() {
+            const response = await fetch('/button-click', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: 'create' }),
+            });
+            const result = await response.json();
+            alert(result.reply);
+        }
+
+        async function deletePod() {
+            const response = await fetch('/button-click', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: 'delete' }),
+            });
+            const result = await response.json();
+            alert(result.reply);
+        }
+
         setInterval(fetchPodData, 500);
         fetchPodData();
     </script>
@@ -122,8 +173,12 @@ def index():
 def button_click():
     data = request.json
     message = data.get('message', '')
-    subprocess.run(['kubectl', 'delete', 'pod', '--all', '--force'], \
-        encoding='utf-8', stdout=subprocess.PIPE)
+    if message == 'create':
+        # Add your pod creation logic here
+        pass
+    elif message == 'delete':
+        subprocess.run(['kubectl', 'delete', 'pod', '--all', '--force'], \
+            encoding='utf-8', stdout=subprocess.PIPE)
     return jsonify({'reply': f'Server received: {message}'})
 
 @app.route('/pods')
