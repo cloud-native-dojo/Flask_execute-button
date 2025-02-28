@@ -6,49 +6,128 @@
         body {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
+            background-color: #a9a9a9;
         }
-        button {
-            padding: 20px;
-            font-size: 20px;
-            margin-bottom: 20px;
+        ul {
+            list-style-type: none;
+            padding: 0;
+            width: 90%;
+            max-width: 1200px;
         }
-        pre {
+        li {
             padding: 10px;
             border: 1px solid #ccc;
-            width: 80%;
-            max-width: 600px;
             overflow-x: auto;
+            font-size: 24px;
+            text-align: left;
+            background-color: #fff;
+            margin: 5px 0;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            padding: 20px;
+            position: fixed;
+            bottom: 20px;
+        }
+        .button {
+            padding: 30px 60px;
+            font-size: 32px;
+            border: none;
+            cursor: pointer;
+        }
+        .create-button {
+            background-color: red;
+            color: white;
+        }
+        .delete-button {
+            background-color: blue;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <button onclick="sendMessage()">Click me</button>
-    <h1>Pod Status</h1>
-    <pre id="pod-output">Loading...</pre>
+    <h1>コンテナ管理</h1>
+    <ul id="pod-list">Loading...</ul>
+    <div class="button-container">
+        <button class="button create-button" onclick="createPod()">作成</button>
+        <button class="button delete-button" onclick="deletePod()">削除</button>
+    </div>
     <script>
-        function sendMessage() {
-            fetch('/button-click', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({message: 'ボタンクリック'})
-            });
-        }
+        let currentPods = [];
 
         async function fetchPodData() {
             try {
                 const response = await fetch('/pods');
                 const data = await response.json();
-                document.getElementById('pod-output').textContent = data.output;
+                const newPods = data.output.split('\\n');
+                const podListElement = document.getElementById('pod-list');
+
+                const podsToAdd = newPods.filter(pod => !currentPods.includes(pod));
+                const podsToRemove = currentPods.filter(pod => !newPods.includes(pod));
+
+                podsToRemove.forEach(pod => {
+                    const listItem = document.getElementById(pod);
+                    if (listItem) {
+                        podListElement.removeChild(listItem);
+                    }
+                });
+
+                podsToAdd.forEach(pod => {
+                    const listItem = document.createElement('li');
+                    listItem.id = pod;
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = pod;
+                    checkbox.name = pod;
+                    checkbox.value = pod;
+                    const label = document.createElement('label');
+                    label.htmlFor = pod;
+                    label.appendChild(document.createTextNode(pod));
+                    listItem.appendChild(checkbox);
+                    listItem.appendChild(label);
+                    podListElement.appendChild(listItem);
+                });
+
+                currentPods = newPods;
             } catch (error) {
-                document.getElementById('pod-output').textContent = 'Error fetching data';
+                document.getElementById('pod-list').textContent = 'Error fetching data';
             }
+        }
+
+        async function createPod() {
+            const response = await fetch('/button-click', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: 'create' }),
+            });
+            const result = await response.json();
+            alert(result.reply);
+        }
+
+        async function deletePod() {
+            const response = await fetch('/button-click', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: 'delete' }),
+            });
+            const result = await response.json();
+            alert(result.reply);
         }
 
         setInterval(fetchPodData, 500);

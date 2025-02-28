@@ -130,12 +130,13 @@ HTML = """
         }
 
         async function deletePod() {
+            const checkedPods = Array.from(document.querySelectorAll('#pod-list input:checked')).map(checkbox => checkbox.value);
             const response = await fetch('/button-click', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ message: 'delete' }),
+                body: JSON.stringify({ message: 'delete', pods: checkedPods }),
             });
             const result = await response.json();
             alert(result.reply);
@@ -172,8 +173,9 @@ def button_click():
         # Add your pod creation logic here
         pass
     elif message == 'delete':
-        subprocess.run(['kubectl', 'delete', 'pod', '--all', '--force'], \
-            encoding='utf-8', stdout=subprocess.PIPE)
+        pods = data.get('pods', [])
+        for pod in pods:
+            subprocess.run(['kubectl', 'delete', 'pod', pod, '--force'], encoding='utf-8', stdout=subprocess.PIPE)
     return jsonify({'reply': f'Server received: {message}'})
 
 @app.route('/pods')
