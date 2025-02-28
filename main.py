@@ -44,15 +44,31 @@ HTML = """
 <body>
     <ul id="pod-list">Loading...</ul>
     <script>
+        let currentPods = [];
+
         async function fetchPodData() {
             try {
                 const response = await fetch('/pods');
                 const data = await response.json();
-                const podList = data.output.split('\\n');
+                const newPods = data.output.split('\\n');
                 const podListElement = document.getElementById('pod-list');
-                podListElement.innerHTML = '';
-                podList.forEach(pod => {
+
+                // Find pods to add and remove
+                const podsToAdd = newPods.filter(pod => !currentPods.includes(pod));
+                const podsToRemove = currentPods.filter(pod => !newPods.includes(pod));
+
+                // Remove old pods
+                podsToRemove.forEach(pod => {
+                    const listItem = document.getElementById(pod);
+                    if (listItem) {
+                        podListElement.removeChild(listItem);
+                    }
+                });
+
+                // Add new pods
+                podsToAdd.forEach(pod => {
                     const listItem = document.createElement('li');
+                    listItem.id = pod;
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.id = pod;
@@ -65,6 +81,9 @@ HTML = """
                     listItem.appendChild(label);
                     podListElement.appendChild(listItem);
                 });
+
+                // Update currentPods
+                currentPods = newPods;
             } catch (error) {
                 document.getElementById('pod-list').textContent = 'Error fetching data';
             }
