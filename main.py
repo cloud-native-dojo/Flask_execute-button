@@ -1,3 +1,7 @@
+#起動コマンド
+#python3 main.py name-list 5003
+#python3 main.py name-list-old 5004
+
 import flask
 from flask import request, jsonify, render_template
 import subprocess
