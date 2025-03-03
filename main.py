@@ -58,4 +58,4 @@ def get_pods():
 if __name__ == '__main__':
     thread = threading.Thread(target=fetch_pod_data, daemon=True)
     thread.start()
-    app.run(port=args[2])
+    app.run(host="0.0.0.0", port=args[2])
